@@ -23,7 +23,7 @@ public class ConsoleInput {
  }
 
  public static void printLonger(ArrayList<Integer> args){
-  int size = Integer.toString(Integer.MIN_VALUE).length(), el=Integer.MIN_VALUE;
+  int size = 0, el=0;
   for (int iterator : args) {
    int itsize = Integer.toString(iterator).length();
    String siterator = Integer.toString(iterator);
@@ -35,31 +35,53 @@ public class ConsoleInput {
   System.out.println("Maximal length: "+size+" character in "+el+" element");
  }
 
+
  //2. Упорядочить и вывести числа в порядке возрастания (убывания) значений их длины.
- public static void sortDesc(ArrayList<Integer> args){
-  ArrayList<String> result = new ArrayList<String>();
-  for(int iterator:args){
-   result.add(Integer.toString(iterator));
+
+ private static void insertSortDesc(String[] array){
+  for(int i=1; i<array.length;i++) {
+   String cur = array[i];
+   int j;
+   for(j=i-1;j>=0&&array[j].length()>cur.length();j--)
+    array[j+1]=array[j];
+   array[j+1]=cur;
   }
-  Collections.sort(result);
-  System.out.print("Desc: ");
-  for (String st: result){
-   System.out.print(st + " ");
+ }
+
+ private static void insertSortAsc(String[] array){
+  for(int i=1; i<array.length;i++) {
+   String cur = array[i];
+   int j;
+   for(j=i-1;j>=0&&array[j].length()<cur.length();j--)
+    array[j+1]=array[j];
+   array[j+1]=cur;
   }
+ }
+
+ public static void printArray(String[] array){
+  for(int i=0;i<array.length;i++)
+   System.out.print(array[i]+" ");
   System.out.println();
  }
 
+ public static void sortDesc(ArrayList<Integer> args){
+  String[] array = new String[args.size()];
+  for(int iterator=0; iterator<args.size();iterator++) {
+   array[iterator] = (Integer.toString(args.get(iterator)));
+  }
+  insertSortDesc(array);
+  System.out.println("Array sort by count of numbers(desc): ");
+  printArray(array);
+ }
+
  public static void sortAsc(ArrayList<Integer> args){
-  ArrayList<String> result = new ArrayList<String>();
-  for(int iterator:args){
-   result.add(Integer.toString(iterator));
+  String[] array = new String[args.size()];
+  for(int iterator=0; iterator<args.size();iterator++) {
+   array[iterator] = (Integer.toString(args.get(iterator)));
   }
-  Collections.sort(result);
-  Collections.reverse(result);
-  System.out.print("Asc: ");
-  for (String st: result){
-   System.out.print(st+" ");
-  }
+  insertSortAsc(array);
+  System.out.println("Array sort by count of numbers(asc): ");
+  printArray(array);
  }
 
  // 3. Вывести на консоль те числа, длина которых меньше (больше) средней, а также длину.
@@ -71,12 +93,14 @@ public class ConsoleInput {
    average+=Integer.toString(iterator).length();
   }
   average/=result.size();
+  System.out.println("Average is: " + average);
   System.out.print("Element with lower then average size: ");
   for(int i=0;i<result.size();i++){
     if(result.get(i).length()<average){
      System.out.print("element "+result.get(i)+" length "+result.get(i).length()+", ");
     }
   }
+  System.out.println();
  }
 
  public static void muchLength(ArrayList<Integer> args){
@@ -87,17 +111,20 @@ public class ConsoleInput {
    average+=Integer.toString(iterator).length();
   }
   average/=result.size();
+  System.out.println("Average is: " + average);
   System.out.print("Element with lower then average size: ");
   for(int i=0;i<result.size();i++){
    if(result.get(i).length()>average){
     System.out.print("element "+result.get(i)+" length "+result.get(i).length()+", ");
    }
   }
+  System.out.println();
  }
 
 
  //4. Найти число, в котором число различных цифр минимально. Если таких чисел несколько,
  //найти первое из них.
+
  private static boolean isUnique(String st){
   for(int i = 0; i<st.length();i++) {
    for (int j = i+1;j<st.length();j++){
@@ -106,6 +133,18 @@ public class ConsoleInput {
    }
   }
   return true;
+ }
+
+ private static int uniqueNum(String st){
+  int[] nums = new int[10]; // counter 0 1 2 3 4 5 6 7 8 9
+  int count=0;
+  for(int i = 0; i<st.length();i++) {
+   nums[Character.getNumericValue(st.charAt(i))]++;
+  }
+  for(int i = 0; i<10;i++) {
+   if(nums[i]==1) count++;
+  }
+  return count;
  }
 
  public static void minDifDigit(ArrayList<Integer> args){
@@ -118,8 +157,8 @@ public class ConsoleInput {
   }
   int min = 11;
   for(String st: result){
-   if(isUnique(st)&&st.length()<min){
-    min=st.length();
+   if(uniqueNum(st)<min){
+    min=uniqueNum(st);
     winner=st;
    }
   }
@@ -150,12 +189,14 @@ public class ConsoleInput {
    }
   }
   int count=0;
+  System.out.println("Numbers with equal number of even and odd digits:");
   for(String st: result){
    if(isEvenOdd(st)){
+    System.out.print(st+" ");
     count++;
    }
   }
-  System.out.println("Count of even numbers with equal number of even and odd digits is "+count);
+  System.out.println("\nCount of even numbers with equal number of even and odd digits is "+count);
  }
 
  //6. Найти число, цифры в котором идут в строгом порядке возрастания. Если таких чисел
@@ -175,6 +216,7 @@ public class ConsoleInput {
   ArrayList<String> result = new ArrayList<String>();
   String winner="";
   for(int iterator:args){
+   if (iterator>9)
     result.add(Integer.toString(iterator));
   }
   for(String st: result){
@@ -193,7 +235,7 @@ public class ConsoleInput {
   ArrayList<String> result = new ArrayList<String>();
   String winner="";
   for(int iterator:args){
-   if(Integer.toString(iterator).length()<11){
+   if(Integer.toString(iterator).length()<11&&Integer.toString(iterator).length()>1){
     result.add(Integer.toString(iterator));
    }
   }
@@ -206,11 +248,11 @@ public class ConsoleInput {
  }
 
 //8. Вывести числа от 1 до k в виде матрицы N x N слева направо и сверху вниз.
- public static void printMatrix(int size){
 
+ public static void printMatrix(int size){
   for(int i=0;i<size;i++) {
-   for(int j=0;j<size;i++) {
-    System.out.print(i+j+1);
+   for(int j=0;j<size;j++) {
+    System.out.print(i*size+j+1+" ");
    }
    System.out.println();
   }
